@@ -24,7 +24,8 @@ class patient(db.Model):
     primary_gp = db.Column(db.Integer, db.ForeignKey('gp_doctor.gmc_id'), nullable=False)
     primary_surgery = db.Column(db.Integer, db.ForeignKey('gp_surgery.id'), nullable=False)
 
-class doctor(db.model):
+
+class doctor(db.Model):
     id = db.Column(db.String(7), primary_key=True)
     name = db.Column(db.String(100), nullable=False)
     dob = db.Column(db.Date, nullable=False)
@@ -33,17 +34,17 @@ class doctor(db.model):
     email_address = db.Column(db.String(100))
     speciality = db.Column(db.String(50), nullable=False)
 
-class gp_doctor(db.model):
+class gp_doctor(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     gmc_id = db.Column(db.String(7), db.ForeignKey('doctor.id'), nullable=False)
     surgery_id = db.Column(db.Integer, db.ForeignKey('gp_surgery.id'), nullable=False)
 
-class hospital_doctor(db.model):
+class hospital_doctor(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     gmc_id = db.Column(db.String(7), db.ForeignKey('doctor.id'), nullable=False)
     department_id = db.Column(db.Integer, db.ForeignKey('hospital_department.id'), nullable=False)
 
-class gp_surgery(db.model):
+class gp_surgery(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
     address = db.Column(db.Text, nullable=False)
@@ -51,7 +52,7 @@ class gp_surgery(db.model):
     email_address = db.Column(db.String(100), nullable=False)
     num_employees = db.Column(db.Integer, nullable=False)
 
-class hospital(db.model):
+class hospital(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
     address = db.Column(db.Text, nullable=False)
@@ -59,17 +60,17 @@ class hospital(db.model):
     email_address = db.Column(db.String(100), nullable=False)
     num_employees = db.Column(db.Integer, nullable=False)
 
-class hospital_department(db.model):
+class hospital_department(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     department_id = db.Column(db.Integer, db.ForeignKey('department.id'), nullable=False)
     hospital_id = db.Column(db.Integer, db.ForeignKey('hospital.id'), nullable=False)
     num_employees = db.Column(db.Integer, nullable=False)
 
-class department(db.model):
+class department(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
 
-class appointment(db.model):
+class appointment(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     date_time = db.Column(db.DateTime, nullable=False, default=datetime.now(timezone.utc))
     hospital_id = db.Column(db.Integer, db.ForeignKey('hospital.id')) # Two potential locations for appointment
@@ -79,14 +80,14 @@ class appointment(db.model):
     # Treatment Plan ID
     status = db.Column(db.Enum(Status), nullable=False, default=Status.SCHEDULED)
 
-class procedure(db.model):
+class procedure(db.Model):
     id = db.Column(db.String(20), primary_key=True)
     name = db.Column(db.String(100), nullable=False)
     department = db.Column(db.Integer, db.ForeignKey('department.id'), nullable=False)
     description = db.Column(db.Text)
 
-class appointment_procedure(db.model):
-    id = db.Column(db.Integer, priamry_key=True)
+class appointment_procedure(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
     # Procedure ID
     # Appointment ID
     status = db.Column(db.Enum(Status), nullable=False, default=Status.SCHEDULED)
