@@ -51,7 +51,7 @@ class Severity(enum.Enum):
 # DATABASE TABLES
 
 class patient(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.String(10), primary_key=True)
     name = db.Column(db.String(100), nullable=False)
     dob = db.Column(db.Date, nullable=False)
     address = db.Column(db.Text, nullable=False)
@@ -110,7 +110,7 @@ class appointment(db.Model):
     date_time = db.Column(db.DateTime, nullable=False, default=datetime.now(timezone.utc))
     hospital_id = db.Column(db.Integer, db.ForeignKey('hospital.id')) # two potential locations for appointment
     surgery_id = db.Column(db.Integer, db.ForeignKey('gp_surgery.id')) # one is nullable
-    patient_id = db.Column(db.Integer, db.ForeignKey('patient.id'), nullable=False)
+    patient_id = db.Column(db.String(10), db.ForeignKey('patient.id'), nullable=False)
     doctor_id = db.Column(db.String(7), db.ForeignKey('doctor.id'), nullable=False)
     treatment_plan_id = db.Column(db.Integer, db.ForeignKey('treatment_plan.id'))
     status = db.Column(db.Enum(Status), nullable=False, default=Status.SCHEDULED)
@@ -137,8 +137,8 @@ class result(db.Model):
     status = db.Column(db.Enum(Result), nullable=False, default=Result.PENDING)
     date_time = db.Column(db.DateTime, nullable=False, default=datetime.now(timezone.utc))
     tested_name = db.Column(db.String(100))
-    tested_value = db.Column(db.Integer)
-    patient_id = db.Column(db.Integer, db.ForeignKey('patient.id'), nullable=False)
+    tested_value = db.Column(db.Real)
+    patient_id = db.Column(db.String(10), db.ForeignKey('patient.id'), nullable=False)
 
 class letter(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -149,11 +149,11 @@ class letter(db.Model):
     content = db.Column(db.Text, nullable=False)
     date_time = db.Column(db.DateTime, nullable=False, default=datetime.now(timezone.utc))
     status = db.Column(db.Enum(Result), nullable=False, default=Result.PENDING)
-    patient_id = db.Column(db.Integer, db.ForeignKey('patient.id'), nullable=False)
+    patient_id = db.Column(db.String(10), db.ForeignKey('patient.id'), nullable=False)
 
 class treatment_plan(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    patient_id = db.Column(db.Integer, db.ForeignKey('patient.id'), nullable=False)
+    patient_id = db.Column(db.String(10), db.ForeignKey('patient.id'), nullable=False)
     title = db.Column(db.String(100), nullable=False)
     content = db.Column(db.Text, nullable=False)
     date_time = db.Column(db.DateTime, nullable=False, default=datetime.now(timezone.utc))
@@ -169,7 +169,7 @@ class referral(db.Model):
     reason = db.Column(db.Text, nullable=False)
     status = db.Column(db.Enum(Result), nullable=False, default=Result.PENDING)
     referred_department = db.Column(db.Integer, db.ForeignKey('hospital_department.id')) # nullable in case referral is to gp surgery
-    patient_id = db.Column(db.Integer, db.ForeignKey('patient.id'), nullable=False)
+    patient_id = db.Column(db.String(10), db.ForeignKey('patient.id'), nullable=False)
 
 class medication(db.Model):
     id = db.Column(db.String(20), primary_key=True)
@@ -183,7 +183,7 @@ class medication(db.Model):
 
 class patient_medication(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    patient_id = db.Column(db.Integer, db.ForeignKey('patient.id'), nullable=False)
+    patient_id = db.Column(db.String(10), db.ForeignKey('patient.id'), nullable=False)
     prescribing_doctor_id = db.Column(db.String(7), db.ForeignKey('doctor.id'), nullable=False)
     date_time = db.Column(db.DateTime, nullable=False, default=datetime.now(timezone.utc))
     reason = db.Column(db.Text, nullable=False)
@@ -201,7 +201,7 @@ class vaccination(db.Model):
 
 class patient_vaccination(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    patient_id = db.Column(db.Integer, db.ForeignKey('patient.id'), nullable=False)
+    patient_id = db.Column(db.String(10), db.ForeignKey('patient.id'), nullable=False)
     vaccination_id = db.Column(db.String(20), db.ForeignKey('vaccination.id'), nullable=False)
     dose_number = db.Column(db.Integer, nullable=False)
     administering_doctor_id = db.Column(db.String(7), db.ForeignKey('doctor.id'), nullable=False)
@@ -218,7 +218,7 @@ class allergy(db.Model):
 
 class patient_allergy(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    patient_id = db.Column(db.Integer, db.ForeignKey('patient.id'), nullable=False)
+    patient_id = db.Column(db.String(10), db.ForeignKey('patient.id'), nullable=False)
     allergy_id = db.Column(db.String(20), db.ForeignKey('allergy.id'), nullable=False)
     severity = db.Column(db.Enum(Severity), nullable=False)
     reaction = db.Column(db.Text, nullable=False)
@@ -236,7 +236,7 @@ class condition(db.Model):
 
 class patient_condition(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    patient_id = db.Column(db.Integer, db.ForeignKey('patient.id'), nullable=False)
+    patient_id = db.Column(db.String(10), db.ForeignKey('patient.id'), nullable=False)
     condition_id = db.Column(db.String(20), db.ForeignKey('condition.id'), nullable=False)
     date_time = db.Column(db.DateTime, nullable=False, default=datetime.now(timezone.utc))
     status = db.Column(db.Enum(TimeStatus), nullable=False)
