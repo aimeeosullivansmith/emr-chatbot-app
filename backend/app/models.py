@@ -11,6 +11,18 @@ class Status(enum.Enum):
     COMPLETED = "Completed"
     CANCELLED = "Cancelled"
 
+class Result(enum.Enum):
+    PENDING = "Pending"
+    COMPLETED = "Completed"
+
+class LetterType(enum.Enum):
+    REFERRAL = "Referral"
+    DISCHARGE = "Discharge"
+    RESULT = "Result"
+    APPOINTMENT = "Appointment"
+    MEDICATION = "Medication"
+    ADMIN = "Administrative"
+    OTHER = "Other"
 
 # DATABASE TABLES
 
@@ -77,7 +89,7 @@ class appointment(db.Model):
     surgery_id = db.Column(db.Integer, db.ForeignKey('gp_surgery.id')) # One is nullable
     patient_id = db.Column(db.Integer, db.ForeignKey('patient.id'), nullable=False)
     doctor_id = db.Column(db.String(7), db.ForeignKey('doctor.id'), nullable=False)
-    # Treatment Plan ID
+    treatment_plan_id = db.Column(db.Integer, db.ForeignKey('treatment_plan.id'))
     status = db.Column(db.Enum(Status), nullable=False, default=Status.SCHEDULED)
 
 class procedure(db.Model):
@@ -88,10 +100,41 @@ class procedure(db.Model):
 
 class appointment_procedure(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    # Procedure ID
-    # Appointment ID
+    appointment_id = db.Column(db.Integer, db.ForeignKey('appointment.id'), nullable=False)
+    procedure_id = db.Column(db.String(20), db.ForeignKey('procedure.id'), nullable=False)
     status = db.Column(db.Enum(Status), nullable=False, default=Status.SCHEDULED)
     date_time = db.Column(db.DateTime, nullable=False, default=datetime.now(timezone.utc))
-    # Location ID
+    hospital_id = db.Column(db.Integer, db.ForeignKey('hospital.id')) # Two potential locations for appointment
+    surgery_id = db.Column(db.Integer, db.ForeignKey('gp_surgery.id')) # One is nullable
     
+class result(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    appt_procedure_id = db.Column(db.Integer, db.ForeignKey('appointment_procedure.id'), nullable=False)
+    description = db.Column(db.Text)
+    status = db.Column(db.Enum(Result), nullable=False, default=Result.PENDING)
+    date_time = db.Column(db.DateTime, nullable=False, default=datetime.now(timezone.utc))
+    tested_name = db.Column(db.String(100))
+    tested_value = db.Column(db.Integer)
+    patient_id = db.Column(db.Integer, db.ForeignKey('patient.id'), nullable=False)
+
+class letter(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    author_doctor = db.Column(db.String(7), db.ForeignKey('doctor.id'), nullable=False)
+    recipient_doctor = db.Column(db.String(7), db.ForeignKey('doctor.id'), nullable=False)
+    appointment_id = db.Column(db.Integer, db.ForeignKey('appointment.id'))
+    letter_type = db.Column(db.Enum(LetterType), nullable=False)
+    content = db.Column(db.Text, nullable=False)
+    date_time = db.Column(db.DateTime, nullable=False, default=datetime.now(timezone.utc))
+    status = db.Column(db.Enum(Result), nullable=False, default=Result.PENDING)
+    patient_id = db.Column(db.Integer, db.ForeignKey('patient.id'), nullable=False)
+
+class treatment_plan(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    patient_id = db.Column(db.Integer, db.ForeignKey('patient.id'), nullable=False)
+    title = db.Column(db.String(100), nullable=False)
+    content = db.Column(db.Text, nullable=False)
+    date_time = db.Column(db.DateTime, nullable=False, default=datetime.now(timezone.utc))
+
+
+
 
